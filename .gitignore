@@ -1,41 +1,77 @@
-# Compiled Lua sources
-luac.out
+getgenv().offset = 1.4
+local uis = game:GetService("UserInputService")
+local player = game:GetService("Players").LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
 
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
+spawn(function()
+    game:GetService("RunService").Heartbeat:Connect(function ()
+        for i, v in pairs(player.Character:GetChildren()) do
+            if v:IsA("BasePart") or v:IsA("MeshPart") then
+                v.Transparency = 1
+            end
+            if v:IsA("Accessory") then
+                v:Destroy()
+            end
+        end
+    end)
+    for i,v in next, game.Players.LocalPlayer.Character.Head:GetDescendants() do 
+        if v:IsA('Decal') then 
+            v.Transparency = 1
+        end 
+    end 
+    player.Character.Head.face:Destroy()
+end)
 
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
+if getgenv().TurnIntoCharacter == "Crocco" then
+    getgenv().CharId = 2314754220
+elseif getgenv().TurnIntoCharacter == "Enforcer" then 
+    getgenv().CharId = 12537719213
+elseif getgenv().TurnIntoCharacter == "Golem" then 
+    getgenv().CharId = 12540868571
+    getgenv().offset = 13
+end
 
-# Precompiled Headers
-*.gch
-*.pch
+local CustomChar = game:GetObjects("rbxassetid://"..getgenv().CharId)[1]
+spawn(function()
+    CustomChar.Parent = game:GetService("Workspace")
+    CustomChar.Name = "reverse is namaglabajalbiar"
+    if getgenv().TurnIntoCharacter == "Enforcer" then 
+        CustomChar.Axe:Destroy()
+    end
+end)
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
+game:GetService("RunService").RenderStepped:Connect(function()
+    game.Players.LocalPlayer.Character.Head.MarkingMount.Transparency = 1
+    game.Players.LocalPlayer.Character.Head.FaceMount.Transparency = 1
+    for i,v in next, game.Players.LocalPlayer.Character:GetDescendants() do 
+        if v.Name:find("DamageMark") then 
+            v:Destroy()
+        end 
+    end 
+    getgenv().humanoid = CustomChar.Humanoid
+    if getgenv().TurnIntoCharacter == "Crocco" then
+        getgenv().IdleAnim = getgenv().humanoid:LoadAnimation(game:GetService("ReplicatedStorage").Assets.Anims.Mobs.Crocco.Idle)
+    elseif getgenv().TurnIntoCharacter == "Enforcer" then 
+        getgenv().IdleAnim = getgenv().humanoid:LoadAnimation(game:GetService("ReplicatedStorage").Assets.Anims.Mobs.Enforcer.Idle)
+    elseif getgenv().TurnIntoCharacter == "Golem" then
+        getgenv().IdleAnim = getgenv().humanoid:LoadAnimation(game:GetService("ReplicatedStorage").Assets.Anims.Mobs.Golem.Idle)
+    end
+    CustomChar.HumanoidRootPart.Velocity = Vector3.new()
+    CustomChar.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame+Vector3.new(0,getgenv().offset,0)
+    for i, v in pairs(CustomChar:GetChildren()) do
+        if v:IsA("BasePart") then
+            v.CanCollide = false
+            v.Massless = true
+        end
+        if v:IsA("Part") then
+            v.CanCollide = false
+            v.Massless = true
+        end
+        if v:IsA("MeshPart") then
+            v.CanCollide = false
+            v.Massless = true
+        end
+    end
+    getgenv().IdleAnim:Play()
+end)
